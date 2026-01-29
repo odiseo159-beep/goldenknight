@@ -427,7 +427,7 @@ export default function GoldenKnightPage() {
               <a href="https://x.com/MinerKnightBNB" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors" aria-label="Twitter">
                 𝕏
               </a>
-              <a href="#" className="hover:text-primary transition-colors" aria-label="Telegram">
+              <a href="https://t.me/goldenknightbnb" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors" aria-label="Telegram">
                 Telegram
               </a>
             </div>
