@@ -427,9 +427,6 @@ export default function GoldenKnightPage() {
               <a href="#" className="hover:text-primary transition-colors" aria-label="Twitter">
                 𝕏
               </a>
-              <a href="#" className="hover:text-primary transition-colors" aria-label="Discord">
-                Discord
-              </a>
               <a href="#" className="hover:text-primary transition-colors" aria-label="Telegram">
                 Telegram
               </a>
