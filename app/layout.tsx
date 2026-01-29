@@ -8,25 +8,12 @@ const _cinzel = Cinzel({ subsets: ["latin"], variable: '--font-serif' });
 const _inter = Inter({ subsets: ["latin"], variable: '--font-sans' });
 
 export const metadata: Metadata = {
-  title: '龙脉金骑 - Knight of the Imperial Vein',
-  description: '在BNB链上加入龙脉金骑铸造平台。铸造黄金，赚取BNB，成为传奇骑士。Join Knight of the Imperial Vein on BNB Chain.',
+  title: '黄金金骑',
+  description: '加入黄金骑士的远征。赚取即时 BNB 奖励，并在 BNB 链上最强大的黄金铸造厂中积累财富。',
   generator: 'v0.app',
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+    icon: '/favicon.ico',
+    apple: '/icon.png',
   },
 }
 
