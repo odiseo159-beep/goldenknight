@@ -424,7 +424,7 @@ export default function GoldenKnightPage() {
               <span className="font-semibold text-primary">BNB Chain</span>
             </div>
             <div className="flex items-center gap-4">
-              <a href="#" className="hover:text-primary transition-colors" aria-label="Twitter">
+              <a href="https://x.com/MinerKnightBNB" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors" aria-label="Twitter">
                 𝕏
               </a>
               <a href="#" className="hover:text-primary transition-colors" aria-label="Telegram">
