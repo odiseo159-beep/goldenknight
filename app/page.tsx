@@ -340,10 +340,10 @@ export default function GoldenKnightPage() {
               <div className="mb-4 p-3 rounded-lg bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/30">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-primary uppercase tracking-wider">
-                    {language === 'zh' ? '监控合约' : 'Monitoring CA'}:
+                    CA:
                   </span>
                   <span className="font-mono text-sm text-foreground bg-card/50 px-2 py-1 rounded border border-border/50">
-                    0xcd88fa8e35ae114960855697a00dd045be5e7777
+                    soon
                   </span>
                 </div>
               </div>
