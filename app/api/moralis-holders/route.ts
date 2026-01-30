@@ -33,11 +33,11 @@ export async function GET() {
       console.log('[v0] No holders found, returning placeholder data');
       return NextResponse.json({
         topHolders: [
-          { rank: 1, knight: '0x742d...3f5a', gold: '2,450 GLD' },
-          { rank: 2, knight: '0x8b3c...7d2e', gold: '1,890 GLD' },
-          { rank: 3, knight: '0x1a5f...9c4b', gold: '1,675 GLD' },
-          { rank: 4, knight: '0x6e2d...5a1c', gold: '1,340 GLD' },
-          { rank: 5, knight: '0x9f4a...2b8d', gold: '1,120 GLD' },
+          { rank: 1, knight: '0x742d...3f5a', gold: '2,450 $龙脉金骑' },
+          { rank: 2, knight: '0x8b3c...7d2e', gold: '1,890 $龙脉金骑' },
+          { rank: 3, knight: '0x1a5f...9c4b', gold: '1,675 $龙脉金骑' },
+          { rank: 4, knight: '0x6e2d...5a1c', gold: '1,340 $龙脉金骑' },
+          { rank: 5, knight: '0x9f4a...2b8d', gold: '1,120 $龙脉金骑' },
         ],
         activeKnights: 0,
       });
@@ -53,7 +53,7 @@ export async function GET() {
       
       // Convertir balance de wei a tokens (dividir por 10^18)
       const balanceInTokens = Number(balance) / 1e18;
-      const formattedBalance = `${balanceInTokens.toLocaleString(undefined, { maximumFractionDigits: 0 })} GLD`;
+      const formattedBalance = `${balanceInTokens.toLocaleString(undefined, { maximumFractionDigits: 0 })} $龙脉金骑`;
       
       return {
         rank: index + 1,
@@ -74,11 +74,11 @@ export async function GET() {
     // Return placeholder data on error
     return NextResponse.json({
       topHolders: [
-        { rank: 1, knight: '0x742d...3f5a', gold: '2,450 GLD' },
-        { rank: 2, knight: '0x8b3c...7d2e', gold: '1,890 GLD' },
-        { rank: 3, knight: '0x1a5f...9c4b', gold: '1,675 GLD' },
-        { rank: 4, knight: '0x6e2d...5a1c', gold: '1,340 GLD' },
-        { rank: 5, knight: '0x9f4a...2b8d', gold: '1,120 GLD' },
+        { rank: 1, knight: '0x742d...3f5a', gold: '2,450 $龙脉金骑' },
+        { rank: 2, knight: '0x8b3c...7d2e', gold: '1,890 $龙脉金骑' },
+        { rank: 3, knight: '0x1a5f...9c4b', gold: '1,675 $龙脉金骑' },
+        { rank: 4, knight: '0x6e2d...5a1c', gold: '1,340 $龙脉金骑' },
+        { rank: 5, knight: '0x9f4a...2b8d', gold: '1,120 $龙脉金骑' },
       ],
       activeKnights: 0,
     });
