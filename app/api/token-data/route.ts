@@ -13,8 +13,13 @@ async function calculateHoldersFromTransfers(apiKey: string, contractAddress: st
   // Obtener las últimas 1000 transferencias del token
   const transfersUrl = `https://api.bscscan.com/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=1000&sort=desc&apikey=${apiKey}`;
   
+  console.log('[v0] Fetching transfers from:', transfersUrl);
   const response = await fetch(transfersUrl);
   const data = await response.json();
+  
+  console.log('[v0] BSCScan tokentx status:', data.status);
+  console.log('[v0] BSCScan tokentx message:', data.message);
+  console.log('[v0] BSCScan tokentx result count:', data.result?.length || 0);
   
   if (data.status === '1' && data.result) {
     // Procesar transferencias para calcular balances
@@ -50,11 +55,17 @@ async function calculateHoldersFromTransfers(apiKey: string, contractAddress: st
 
 export async function GET() {
   try {
+    console.log('[v0] API called - Token:', CONFIG.TOKEN_CONTRACT);
+    console.log('[v0] API Key present:', CONFIG.BSCSCAN_API_KEY !== 'YourBscScanApiKey');
+    
     // Calcular holders desde transferencias (API gratuita)
     const { holders, totalHolders } = await calculateHoldersFromTransfers(
       CONFIG.BSCSCAN_API_KEY,
       CONFIG.TOKEN_CONTRACT
     );
+
+    console.log('[v0] Holders calculated:', holders.length);
+    console.log('[v0] Total holders:', totalHolders);
 
     let topHolders = [];
     let activeKnights = totalHolders;
