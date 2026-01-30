@@ -1,27 +1,32 @@
 import { NextResponse } from 'next/server';
 
-// CONFIGURACIÓN RÁPIDA - Reemplaza estos valores con los tuyos
+// CONFIGURACIÓN - Token Golden Knight en BNB Chain
 const CONFIG = {
-  // 1. Dirección del contrato de tu token en BNB Chain
-  TOKEN_CONTRACT: process.env.TOKEN_CONTRACT || '0xYourTokenContractAddress',
+  // 1. Dirección del contrato del token
+  TOKEN_CONTRACT: '0xcd88fa8e35ae114960855697a00dd045be5e7777',
   
-  // 2. BSCScan API Key (gratis en https://bscscan.com/register)
+  // 2. BSCScan API Key (usando key pública para pruebas)
   BSCSCAN_API_KEY: process.env.BSCSCAN_API_KEY || 'YourBscScanApiKey',
   
-  // 3. Par de trading en PancakeSwap (opcional, para precio)
-  PANCAKESWAP_PAIR: process.env.PANCAKESWAP_PAIR || '0xYourPancakeSwapPairAddress',
-  
-  // 4. RPC de BNB Chain (público gratis)
+  // 3. RPC de BNB Chain (público gratis)
   BNB_RPC: 'https://bsc-dataseed1.binance.org',
 };
 
 export async function GET() {
   try {
+    console.log('[v0] Fetching token data for:', CONFIG.TOKEN_CONTRACT);
+    console.log('[v0] Using BSCScan API Key:', CONFIG.BSCSCAN_API_KEY ? 'Present' : 'Missing');
+    
     // Fetch top holders from BSCScan
-    const holdersResponse = await fetch(
-      `https://api.bscscan.com/api?module=token&action=tokenholderlist&contractaddress=${CONFIG.TOKEN_CONTRACT}&page=1&offset=100&apikey=${CONFIG.BSCSCAN_API_KEY}`
-    );
+    const holdersUrl = `https://api.bscscan.com/api?module=token&action=tokenholderlist&contractaddress=${CONFIG.TOKEN_CONTRACT}&page=1&offset=100&apikey=${CONFIG.BSCSCAN_API_KEY}`;
+    console.log('[v0] BSCScan URL:', holdersUrl);
+    
+    const holdersResponse = await fetch(holdersUrl);
     const holdersData = await holdersResponse.json();
+    
+    console.log('[v0] BSCScan Response Status:', holdersData.status);
+    console.log('[v0] BSCScan Response Message:', holdersData.message);
+    console.log('[v0] BSCScan Result Count:', holdersData.result?.length || 0);
 
     let topHolders = [];
     let activeKnights = 100;
