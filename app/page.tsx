@@ -81,8 +81,14 @@ export default function GoldenKnightPage() {
   const [bnbPrice, setBnbPrice] = useState<string>('...');
   const [goldPrice, setGoldPrice] = useState<string>('...');
   const [activeKnights, setActiveKnights] = useState<number>(0);
-  const [topHolders, setTopHolders] = useState<Array<{ rank: number; knight: string; gold: string }>>([]);
-  const [isLoadingHolders, setIsLoadingHolders] = useState<boolean>(true);
+  const [topHolders, setTopHolders] = useState<Array<{ rank: number; knight: string; gold: string }>>([
+    { rank: 1, knight: '0x742d...3f5a', gold: '2,450 $龙脉金骑' },
+    { rank: 2, knight: '0x8b3c...7d2e', gold: '1,890 $龙脉金骑' },
+    { rank: 3, knight: '0x1a5f...9c4b', gold: '1,675 $龙脉金骑' },
+    { rank: 4, knight: '0x6e2d...5a1c', gold: '1,340 $龙脉金骑' },
+    { rank: 5, knight: '0x9f4a...2b8d', gold: '1,120 $龙脉金骑' },
+  ]);
+  const [isLoadingHolders, setIsLoadingHolders] = useState<boolean>(false);
 
   const t = translations[language];
 
@@ -122,37 +128,42 @@ export default function GoldenKnightPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch Token Holders from Moralis API
-  useEffect(() => {
-    const fetchHolders = async () => {
-      setIsLoadingHolders(true);
-      try {
-        console.log('[v0] Fetching holders from Moralis API...');
-        const response = await fetch('/api/moralis-holders');
-        const data = await response.json();
-        
-        console.log('[v0] Moralis data received:', data);
-        setTopHolders(data.topHolders);
-        setActiveKnights(data.activeKnights || 100);
-      } catch (error) {
-        console.log('[v0] Error fetching holders:', error);
-        // Fallback to placeholder data
-        setTopHolders([
-          { rank: 1, knight: '0x742d...3f5a', gold: '2,450 $龙脉金骑' },
-          { rank: 2, knight: '0x8b3c...7d2e', gold: '1,890 $龙脉金骑' },
-          { rank: 3, knight: '0x1a5f...9c4b', gold: '1,675 $龙脉金骑' },
-          { rank: 4, knight: '0x6e2d...5a1c', gold: '1,340 $龙脉金骑' },
-          { rank: 5, knight: '0x9f4a...2b8d', gold: '1,120 $龙脉金骑' },
-        ]);
-        setActiveKnights(100);
-      } finally {
-        setIsLoadingHolders(false);
-      }
-    };
+  // Fetch Token Holders from Moralis API - PAUSED
+  // useEffect(() => {
+  //   const fetchHolders = async () => {
+  //     setIsLoadingHolders(true);
+  //     try {
+  //       console.log('[v0] Fetching holders from Moralis API...');
+  //       const response = await fetch('/api/moralis-holders');
+  //       const data = await response.json();
+  //       
+  //       console.log('[v0] Moralis data received:', data);
+  //       setTopHolders(data.topHolders);
+  //       setActiveKnights(data.activeKnights || 100);
+  //     } catch (error) {
+  //       console.log('[v0] Error fetching holders:', error);
+  //       // Fallback to placeholder data
+  //       setTopHolders([
+  //         { rank: 1, knight: '0x742d...3f5a', gold: '2,450 $龙脉金骑' },
+  //         { rank: 2, knight: '0x8b3c...7d2e', gold: '1,890 $龙脉金骑' },
+  //         { rank: 3, knight: '0x1a5f...9c4b', gold: '1,675 $龙脉金骑' },
+  //         { rank: 4, knight: '0x6e2d...5a1c', gold: '1,340 $龙脉金骑' },
+  //         { rank: 5, knight: '0x9f4a...2b8d', gold: '1,120 $龙脉金骑' },
+  //       ]);
+  //       setActiveKnights(100);
+  //     } finally {
+  //       setIsLoadingHolders(false);
+  //     }
+  //   };
 
-    fetchHolders();
-    const interval = setInterval(fetchHolders, 60000); // Update every 60 seconds
-    return () => clearInterval(interval);
+  //   fetchHolders();
+  //   const interval = setInterval(fetchHolders, 60000); // Update every 60 seconds
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  // Set static active knights count
+  useEffect(() => {
+    setActiveKnights(100);
   }, []);
 
   // Fetch Token Price from DEX Screener
