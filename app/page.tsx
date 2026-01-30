@@ -82,6 +82,7 @@ export default function GoldenKnightPage() {
   const [goldPrice, setGoldPrice] = useState<string>('...');
   const [activeKnights, setActiveKnights] = useState<number>(0);
   const [topHolders, setTopHolders] = useState<Array<{ rank: number; knight: string; gold: string }>>([]);
+  const [isLoadingHolders, setIsLoadingHolders] = useState<boolean>(true);
 
   const t = translations[language];
 
@@ -121,23 +122,21 @@ export default function GoldenKnightPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch Token Data from API
+  // Fetch Token Holders from Moralis API
   useEffect(() => {
-    const fetchTokenData = async () => {
+    const fetchHolders = async () => {
+      setIsLoadingHolders(true);
       try {
-        const response = await fetch('/api/token-data');
+        console.log('[v0] Fetching holders from Moralis API...');
+        const response = await fetch('/api/moralis-holders');
         const data = await response.json();
         
-        setGoldPrice(data.goldPrice);
-        setActiveKnights(data.activeKnights);
+        console.log('[v0] Moralis data received:', data);
         setTopHolders(data.topHolders);
-        
-        console.log('[v0] Token data updated:', data.lastUpdate);
+        setActiveKnights(data.activeKnights || 100);
       } catch (error) {
-        console.log('[v0] Error fetching token data:', error);
+        console.log('[v0] Error fetching holders:', error);
         // Fallback to placeholder data
-        setGoldPrice('$0.00');
-        setActiveKnights(100);
         setTopHolders([
           { rank: 1, knight: '0x742d...3f5a', gold: '2,450 GLD' },
           { rank: 2, knight: '0x8b3c...7d2e', gold: '1,890 GLD' },
@@ -145,11 +144,32 @@ export default function GoldenKnightPage() {
           { rank: 4, knight: '0x6e2d...5a1c', gold: '1,340 GLD' },
           { rank: 5, knight: '0x9f4a...2b8d', gold: '1,120 GLD' },
         ]);
+        setActiveKnights(100);
+      } finally {
+        setIsLoadingHolders(false);
       }
     };
 
-    fetchTokenData();
-    const interval = setInterval(fetchTokenData, 60000); // Update every 60 seconds
+    fetchHolders();
+    const interval = setInterval(fetchHolders, 60000); // Update every 60 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  // Fetch Token Price from DEX Screener
+  useEffect(() => {
+    const fetchTokenPrice = async () => {
+      try {
+        const response = await fetch('/api/token-data');
+        const data = await response.json();
+        setGoldPrice(data.goldPrice);
+      } catch (error) {
+        console.log('[v0] Error fetching token price:', error);
+        setGoldPrice('$0.00');
+      }
+    };
+
+    fetchTokenPrice();
+    const interval = setInterval(fetchTokenPrice, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -321,18 +341,27 @@ export default function GoldenKnightPage() {
                   <span>{t.knight}</span>
                   <span>{t.goldEarned}</span>
                 </div>
-                {topHolders.map((entry) => (
-                  <div
-                    key={entry.rank}
-                    className="grid grid-cols-[auto_1fr_auto] gap-4 items-center p-3 rounded-lg bg-card/50 hover:bg-card/80 transition-colors border border-border/50"
-                  >
-                    <div className="flex items-center justify-center w-8">
-                      {getMedalIcon(entry.rank)}
+                {isLoadingHolders ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="text-center space-y-3">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                      <p className="text-muted-foreground">Loading...</p>
                     </div>
-                    <span className="font-mono text-foreground">{entry.knight}</span>
-                    <span className="font-semibold text-primary">{entry.gold}</span>
                   </div>
-                ))}
+                ) : (
+                  topHolders.map((entry) => (
+                    <div
+                      key={entry.rank}
+                      className="grid grid-cols-[auto_1fr_auto] gap-4 items-center p-3 rounded-lg bg-card/50 hover:bg-card/80 transition-colors border border-border/50"
+                    >
+                      <div className="flex items-center justify-center w-8">
+                        {getMedalIcon(entry.rank)}
+                      </div>
+                      <span className="font-mono text-foreground">{entry.knight}</span>
+                      <span className="font-semibold text-primary">{entry.gold}</span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
