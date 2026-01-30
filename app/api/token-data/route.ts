@@ -2,45 +2,75 @@ import { NextResponse } from 'next/server';
 
 // CONFIGURACIÓN - Token Golden Knight en BNB Chain
 const CONFIG = {
-  // 1. Dirección del contrato del token
   TOKEN_CONTRACT: '0xcd88fa8e35ae114960855697a00dd045be5e7777',
-  
-  // 2. BSCScan API Key (usando key pública para pruebas)
   BSCSCAN_API_KEY: process.env.BSCSCAN_API_KEY || 'YourBscScanApiKey',
-  
-  // 3. RPC de BNB Chain (público gratis)
-  BNB_RPC: 'https://bsc-dataseed1.binance.org',
 };
+
+// Calcular balances de holders desde transferencias
+async function calculateHoldersFromTransfers(apiKey: string, contractAddress: string) {
+  const balances: Record<string, bigint> = {};
+  
+  // Obtener las últimas 1000 transferencias del token
+  const transfersUrl = `https://api.bscscan.com/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=1000&sort=desc&apikey=${apiKey}`;
+  
+  const response = await fetch(transfersUrl);
+  const data = await response.json();
+  
+  if (data.status === '1' && data.result) {
+    // Procesar transferencias para calcular balances
+    for (const tx of data.result) {
+      const from = tx.from.toLowerCase();
+      const to = tx.to.toLowerCase();
+      const value = BigInt(tx.value);
+      
+      // Restar del emisor
+      if (!balances[from]) balances[from] = BigInt(0);
+      balances[from] -= value;
+      
+      // Sumar al receptor
+      if (!balances[to]) balances[to] = BigInt(0);
+      balances[to] += value;
+    }
+    
+    // Filtrar solo balances positivos y ordenar por cantidad
+    const holdersArray = Object.entries(balances)
+      .filter(([_, balance]) => balance > BigInt(0))
+      .map(([address, balance]) => ({ address, balance }))
+      .sort((a, b) => (b.balance > a.balance ? 1 : -1));
+    
+    return {
+      holders: holdersArray,
+      totalHolders: holdersArray.length,
+      txCount: data.result.length,
+    };
+  }
+  
+  return { holders: [], totalHolders: 0, txCount: 0 };
+}
 
 export async function GET() {
   try {
-    console.log('[v0] Fetching token data for:', CONFIG.TOKEN_CONTRACT);
-    console.log('[v0] Using BSCScan API Key:', CONFIG.BSCSCAN_API_KEY ? 'Present' : 'Missing');
-    
-    // Fetch top holders from BSCScan
-    const holdersUrl = `https://api.bscscan.com/api?module=token&action=tokenholderlist&contractaddress=${CONFIG.TOKEN_CONTRACT}&page=1&offset=100&apikey=${CONFIG.BSCSCAN_API_KEY}`;
-    console.log('[v0] BSCScan URL:', holdersUrl);
-    
-    const holdersResponse = await fetch(holdersUrl);
-    const holdersData = await holdersResponse.json();
-    
-    console.log('[v0] BSCScan Response Status:', holdersData.status);
-    console.log('[v0] BSCScan Response Message:', holdersData.message);
-    console.log('[v0] BSCScan Result Count:', holdersData.result?.length || 0);
+    // Calcular holders desde transferencias (API gratuita)
+    const { holders, totalHolders } = await calculateHoldersFromTransfers(
+      CONFIG.BSCSCAN_API_KEY,
+      CONFIG.TOKEN_CONTRACT
+    );
 
     let topHolders = [];
-    let activeKnights = 100;
+    let activeKnights = totalHolders;
 
-    if (holdersData.status === '1' && holdersData.result) {
-      const holders = holdersData.result.slice(0, 5);
-      topHolders = holders.map((holder: any, index: number) => ({
-        rank: index + 1,
-        knight: `${holder.TokenHolderAddress.slice(0, 6)}...${holder.TokenHolderAddress.slice(-4)}`,
-        gold: `${(Number(holder.TokenHolderQuantity) / 1e18).toLocaleString(undefined, { maximumFractionDigits: 0 })} GLD`,
-      }));
-      activeKnights = holdersData.result.length;
+    if (holders.length > 0) {
+      // Tomar los top 5 holders
+      topHolders = holders.slice(0, 5).map((holder, index) => {
+        const balanceNum = Number(holder.balance) / 1e18;
+        return {
+          rank: index + 1,
+          knight: `${holder.address.slice(0, 6)}...${holder.address.slice(-4)}`,
+          gold: `${balanceNum.toLocaleString(undefined, { maximumFractionDigits: 0 })} GLD`,
+        };
+      });
     } else {
-      // Placeholder data if API fails
+      // Placeholder si no hay datos
       topHolders = [
         { rank: 1, knight: '0x742d...3f5a', gold: '2,450 GLD' },
         { rank: 2, knight: '0x8b3c...7d2e', gold: '1,890 GLD' },
@@ -48,12 +78,12 @@ export async function GET() {
         { rank: 4, knight: '0x6e2d...5a1c', gold: '1,340 GLD' },
         { rank: 5, knight: '0x9f4a...2b8d', gold: '1,120 GLD' },
       ];
+      activeKnights = 100;
     }
 
-    // Get token price (simple method using DEX screener or similar)
+    // Obtener precio del token desde DEX Screener (gratis)
     let goldPrice = '$0.00';
     try {
-      // Using DEX Screener API (free, no key needed)
       const priceResponse = await fetch(
         `https://api.dexscreener.com/latest/dex/tokens/${CONFIG.TOKEN_CONTRACT}`
       );
@@ -62,7 +92,7 @@ export async function GET() {
         goldPrice = `$${Number(priceData.pairs[0].priceUsd).toFixed(6)}`;
       }
     } catch (error) {
-      console.log('[v0] Error fetching price:', error);
+      // Silently fail for price
     }
 
     return NextResponse.json({
@@ -74,7 +104,6 @@ export async function GET() {
   } catch (error) {
     console.error('[v0] Error in token-data API:', error);
     
-    // Return placeholder data on error
     return NextResponse.json({
       goldPrice: '$0.00',
       activeKnights: 100,
