@@ -151,7 +151,7 @@ export default function GoldenKnightPage() {
     };
 
     fetchHolders();
-    const interval = setInterval(fetchHolders, 60000); // Update every 60 seconds
+    const interval = setInterval(fetchHolders, 10000); // Update every 10 seconds
     return () => clearInterval(interval);
   }, []);
 
