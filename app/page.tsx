@@ -343,7 +343,7 @@ export default function GoldenKnightPage() {
                     CA:
                   </span>
                   <span className="font-mono text-sm text-foreground bg-card/50 px-2 py-1 rounded border border-border/50">
-                    soon
+                    0x5d58f4fff1f0bd94210ed247b87b829bb4b37777
                   </span>
                 </div>
               </div>

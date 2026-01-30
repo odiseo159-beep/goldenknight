@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 const MORALIS_CONFIG = {
   API_KEY: process.env.MORALIS_API_KEY || '',
-  TOKEN_CONTRACT: '0xcd88fa8e35ae114960855697a00dd045be5e7777',
+  TOKEN_CONTRACT: '0x5d58f4fff1f0bd94210ed247b87b829bb4b37777',
   CHAIN: 'bsc',
 };
 
